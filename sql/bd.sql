@@ -61,8 +61,6 @@ INSERT INTO cliente (nome, email, telefone) VALUES
 ('CARLA NUNES', 'carla.nunes@email.com', '53999990003');
 
 
--- Function 1. Total a pagar da venda.
--- Compras a partir de 200 recebem 10% de desconto.
 CREATE OR REPLACE FUNCTION calcular_total_venda(var_venda_id integer)
 RETURNS money AS $$
 DECLARE
@@ -83,7 +81,6 @@ END;
 $$ LANGUAGE plpgsql;
 
 
--- Function 2. Consulta se a quantidade pedida cabe no estoque atual.
 CREATE OR REPLACE FUNCTION consultar_disponibilidade(var_produto_id integer, var_quantidade integer)
 RETURNS boolean AS $$
 DECLARE
@@ -103,11 +100,6 @@ END;
 $$ LANGUAGE plpgsql;
 
 
--- ---------------------------------------------------------------------------
--- Básicas
--- ---------------------------------------------------------------------------
-
--- Trigger 1. A quantidade do item tem de ser maior que zero.
 CREATE OR REPLACE FUNCTION validar_quantidade_item()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -126,8 +118,6 @@ FOR EACH ROW
 EXECUTE FUNCTION validar_quantidade_item();
 
 
--- Trigger 2. O preço gravado no item tem de ser maior que zero.
--- Se o INSERT não informar o preço, usa o preço atual do produto.
 CREATE OR REPLACE FUNCTION validar_preco_item()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -153,11 +143,6 @@ FOR EACH ROW
 EXECUTE FUNCTION validar_preco_item();
 
 
--- ---------------------------------------------------------------------------
--- Intermediárias
--- ---------------------------------------------------------------------------
-
--- Trigger 3. Guarda o e-mail sem espaços e em minúsculas.
 CREATE OR REPLACE FUNCTION normalizar_email()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -178,8 +163,6 @@ FOR EACH ROW
 EXECUTE FUNCTION normalizar_email();
 
 
--- Trigger 4. Item só entra, muda ou sai enquanto a venda está aberta.
--- Equivale a impedir uma operação fora da janela válida do negócio.
 CREATE OR REPLACE FUNCTION validar_venda_aberta()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -220,9 +203,6 @@ FOR EACH ROW
 EXECUTE FUNCTION validar_venda_aberta();
 
 
--- Trigger 5. Trava a linha do produto e recusa a quantidade que passa do estoque.
--- O FOR UPDATE segura o saldo até o fim da transação, para duas vendas
--- simultâneas não consumirem a mesma unidade.
 CREATE OR REPLACE FUNCTION validar_estoque_item()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -261,9 +241,6 @@ BEFORE INSERT OR UPDATE OF quantidade, produto_id ON item_venda
 FOR EACH ROW
 EXECUTE FUNCTION validar_estoque_item();
 
-
--- Trigger 6. Venda cancelada permanece cancelada.
--- Venda finalizada só pode seguir para cancelada.
 CREATE OR REPLACE FUNCTION validar_status_venda()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -287,13 +264,6 @@ FOR EACH ROW
 EXECUTE FUNCTION validar_status_venda();
 
 
--- ---------------------------------------------------------------------------
--- Avançadas
--- ---------------------------------------------------------------------------
-
--- Trigger 7. A baixa do estoque acontece na inclusão do item.
--- Na alteração, ajusta só a diferença. Na exclusão de item de venda
--- ainda aberta, devolve a quantidade.
 CREATE OR REPLACE FUNCTION movimentar_estoque_item()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -337,8 +307,6 @@ FOR EACH ROW
 EXECUTE FUNCTION movimentar_estoque_item();
 
 
--- Trigger 8. Ao cancelar, devolve as quantidades dos itens que continuam na venda.
--- A procedure só muda o status. Quem devolve o estoque é esta trigger.
 CREATE OR REPLACE FUNCTION devolver_estoque_cancelamento()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -366,8 +334,6 @@ FOR EACH ROW
 EXECUTE FUNCTION devolver_estoque_cancelamento();
 
 
--- Procedure 1. Abre a venda, inclui o item e finaliza o total.
--- Estoque, preço e status válido ficam por conta das triggers.
 CREATE OR REPLACE PROCEDURE registrar_venda(var_cliente_id integer, var_produto_id integer, var_quantidade integer)
 AS $$
 DECLARE
@@ -415,8 +381,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 
--- Procedure 2. Cancela a venda.
--- A devolução do estoque ocorre na trigger trg_devolver_estoque_cancelamento.
+
 CREATE OR REPLACE PROCEDURE cancelar_venda(var_venda_id integer)
 AS $$
 DECLARE
@@ -445,8 +410,6 @@ END;
 $$ LANGUAGE plpgsql;
 
 
--- Procedure 3. Soma unidades ao estoque de um produto já cadastrado.
--- A baixa e a devolução da venda continuam nas triggers do item e do cancelamento.
 CREATE OR REPLACE PROCEDURE repor_estoque(var_produto_id integer, var_quantidade integer)
 AS $$
 DECLARE
@@ -477,10 +440,9 @@ END;
 $$ LANGUAGE plpgsql;
 
 
--- Venda do monitor: 800, com 10% de desconto.
 CALL registrar_venda(1, 4, 1);
 
--- Venda de dois mouses: 90, sem desconto.
+
 CALL registrar_venda(2, 1, 2);
 
 
