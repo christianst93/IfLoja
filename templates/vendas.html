@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block titulo %}Vendas{% endblock %}
+{% block conteudo %}
+<section class="cabecalho">
+  <div>
+    <p class="olho">Operação</p>
+    <h1>Vendas</h1>
+    <p class="resumo">A procedure <code>registrar_venda</code> abre a venda, inclui um item e finaliza. Ela não mexe no estoque: quem baixa é a trigger do item. Compras a partir de R$ 200 recebem 10% de desconto.</p>
+  </div>
+</section>
+
+<section class="painel-form">
+  <h2>Registrar venda</h2>
+  <form method="post" class="linha-form">
+    <input type="hidden" name="acao" value="registrar">
+    <label>
+      Cliente
+      <select name="cliente_id" required>
+        {% for cliente in clientes %}
+        <option value="{{ cliente.id }}">{{ cliente.nome }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>
+      Produto
+      <select name="produto_id" required>
+        {% for produto in produtos %}
+        <option value="{{ produto.id }}">{{ produto.nome }} — {{ produto.estoque }} un. — {{ produto.preco|moeda }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>
+      Quantidade
+      <input name="quantidade" type="number" value="1" required>
+    </label>
+    <button type="submit">Finalizar venda</button>
+  </form>
+  <p class="dica">Quantidade zero, estoque insuficiente e preço inválido são recusados pelo banco. A mensagem da trigger aparece aqui.</p>
+</section>
+
+<section>
+  <h2>Registradas</h2>
+  <div class="tabela-rolagem">
+    <table>
+      <thead>
+        <tr>
+          <th>Nº</th>
+          <th>Cliente</th>
+          <th>Data</th>
+          <th>Status</th>
+          <th>Desconto</th>
+          <th>Total</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for venda in vendas %}
+        <tr>
+          <td><a href="{{ url_for('vendas.detalhe', venda_id=venda.id) }}">{{ venda.id }}</a></td>
+          <td>{{ venda.cliente }}</td>
+          <td>{{ venda.data_hora|datahora }}</td>
+          <td><span class="status status-{{ venda.status }}">{{ venda.status }}</span></td>
+          <td>{{ venda.desconto|moeda }}</td>
+          <td>{{ venda.valor_total|moeda }}</td>
+          <td>
+            {% if venda.status != 'cancelada' %}
+            <form method="post" action="{{ url_for('vendas.cancelar', venda_id=venda.id) }}" onsubmit="return confirm('Cancelar a venda {{ venda.id }} e devolver o estoque?');">
+              <button type="submit" class="botao-secundario">Cancelar</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7">Nenhuma venda registrada.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block titulo %}Clientes{% endblock %}
+{% block conteudo %}
+<section class="cabecalho">
+  <div>
+    <p class="olho">Cadastro</p>
+    <h1>Clientes</h1>
+    <p class="resumo">A trigger <code>trg_normalizar_email</code> grava o e-mail sem espaços e em minúsculas, também quando o insert vem direto da aplicação.</p>
+  </div>
+</section>
+
+<div class="colunas">
+  <section class="painel-form">
+    <h2>Novo cliente</h2>
+    <form method="post">
+      <label>
+        Nome
+        <input name="nome" required maxlength="200">
+      </label>
+      <label>
+        E-mail
+        <input name="email" required maxlength="200" placeholder="  Nome@Email.com ">
+      </label>
+      <label>
+        Telefone
+        <input name="telefone" maxlength="20">
+      </label>
+      <button type="submit">Cadastrar</button>
+    </form>
+    <p class="dica">Experimente um e-mail com letras maiúsculas e espaços nas pontas. A lista mostra o valor que o banco gravou.</p>
+  </section>
+
+  <section>
+    <h2>Cadastrados</h2>
+    <div class="tabela-rolagem">
+      <table>
+        <thead>
+          <tr>
+            <th>Nº</th>
+            <th>Nome</th>
+            <th>E-mail</th>
+            <th>Telefone</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for cliente in clientes %}
+          <tr>
+            <td>{{ cliente.id }}</td>
+            <td>{{ cliente.nome }}</td>
+            <td>{{ cliente.email }}</td>
+            <td>{{ cliente.telefone or "—" }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4">Nenhum cliente cadastrado.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+{% endblock %}

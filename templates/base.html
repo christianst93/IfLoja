@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Início{% endblock %} · IfLoja</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header class="topo">
+    <a class="marca" href="{{ url_for('painel.inicio') }}">
+      <span class="selo">L</span>
+      <span>IfLoja</span>
+    </a>
+    <nav>
+      <a href="{{ url_for('painel.inicio') }}" {% if request.endpoint == 'painel.inicio' %}class="ativa"{% endif %}>Início</a>
+      <a href="{{ url_for('produtos.lista') }}" {% if request.endpoint == 'produtos.lista' %}class="ativa"{% endif %}>Produtos</a>
+      <a href="{{ url_for('clientes.lista') }}" {% if request.endpoint == 'clientes.lista' %}class="ativa"{% endif %}>Clientes</a>
+      <a href="{{ url_for('vendas.lista') }}" {% if request.endpoint and request.endpoint.startswith('vendas.') %}class="ativa"{% endif %}>Vendas</a>
+      <a href="{{ url_for('painel.rotinas') }}" {% if request.endpoint == 'painel.rotinas' %}class="ativa"{% endif %}>Rotinas</a>
+    </nav>
+  </header>
+  <main>
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+      {% for categoria, texto in mensagens %}
+        <p class="aviso aviso-{{ categoria }}">{{ texto }}</p>
+      {% endfor %}
+    {% endwith %}
+    {% block conteudo %}{% endblock %}
+  </main>
+</body>
+</html>

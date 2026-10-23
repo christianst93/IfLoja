@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block titulo %}Produtos{% endblock %}
+{% block conteudo %}
+<section class="cabecalho">
+  <div>
+    <p class="olho">Catálogo</p>
+    <h1>Produtos</h1>
+    <p class="resumo">A consulta de disponibilidade usa a function <code>consultar_disponibilidade</code> e não altera o estoque.</p>
+  </div>
+</section>
+
+<div class="colunas">
+  <section class="painel-form">
+    <h2>Novo produto</h2>
+    <form method="post">
+      <input type="hidden" name="acao" value="cadastrar">
+      <label>
+        Nome
+        <input name="nome" required maxlength="200">
+      </label>
+      <label>
+        Preço
+        <input name="preco" inputmode="decimal" placeholder="45.00" required>
+      </label>
+      <label>
+        Estoque inicial
+        <input name="estoque" type="number" min="0" value="0" required>
+      </label>
+      <label>
+        Categoria
+        <select name="categoria_id" required>
+          {% for categoria in categorias %}
+          <option value="{{ categoria.id }}">{{ categoria.nome }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <button type="submit">Cadastrar</button>
+    </form>
+  </section>
+
+  <section class="painel-form">
+    <h2>Disponibilidade</h2>
+    <form method="post">
+      <input type="hidden" name="acao" value="disponibilidade">
+      <label>
+        Produto
+        <select name="produto_id" required>
+          {% for produto in produtos %}
+          <option value="{{ produto.id }}">{{ produto.nome }} ({{ produto.estoque }} un.)</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>
+        Quantidade pedida
+        <input name="quantidade" type="number" value="1" required>
+      </label>
+      <button type="submit">Consultar</button>
+    </form>
+    {% if disponibilidade %}
+    <p class="resultado {% if disponibilidade.disponivel %}resultado-ok{% else %}resultado-nao{% endif %}">
+      {{ disponibilidade.nome }} tem {{ disponibilidade.estoque }} un.
+      Pedido de {{ disponibilidade.quantidade }}:
+      {% if disponibilidade.disponivel %}cabe no estoque.{% else %}não cabe no estoque.{% endif %}
+    </p>
+    {% endif %}
+  </section>
+
+  <section class="painel-form" id="repor">
+    <h2>Repor estoque</h2>
+    <form method="post">
+      <input type="hidden" name="acao" value="repor">
+      <label>
+        Produto
+        <select name="produto_id" required>
+          {% for produto in produtos %}
+          <option value="{{ produto.id }}">{{ produto.nome }} ({{ produto.estoque }} un.)</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>
+        Quantidade que entrou
+        <input name="quantidade" type="number" min="1" value="1" required>
+      </label>
+      <button type="submit">Repor</button>
+    </form>
+    <p class="dica">A procedure <code>repor_estoque</code> soma essa quantidade ao estoque atual. Ela não mexe nas vendas.</p>
+  </section>
+</div>
+
+<section>
+  <h2>Cadastrados</h2>
+  <div class="tabela-rolagem">
+    <table>
+      <thead>
+        <tr>
+          <th>Nº</th>
+          <th>Nome</th>
+          <th>Categoria</th>
+          <th>Preço</th>
+          <th>Estoque</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for produto in produtos %}
+        <tr>
+          <td>{{ produto.id }}</td>
+          <td>{{ produto.nome }}</td>
+          <td>{{ produto.categoria }}</td>
+          <td>{{ produto.preco|moeda }}</td>
+          <td>{{ produto.estoque }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5">Nenhum produto cadastrado.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

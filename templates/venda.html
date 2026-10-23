@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block titulo %}Venda {{ venda.id }}{% endblock %}
+{% block conteudo %}
+<section class="cabecalho">
+  <div>
+    <p class="olho">Venda {{ venda.id }}</p>
+    <h1>{{ venda.cliente }}</h1>
+    <p class="resumo">{{ venda.data_hora|datahora }} · <span class="status status-{{ venda.status }}">{{ venda.status }}</span></p>
+  </div>
+  <a class="botao-secundario" href="{{ url_for('vendas.lista') }}">Voltar</a>
+</section>
+
+<section>
+  <h2>Itens</h2>
+  <div class="tabela-rolagem">
+    <table>
+      <thead>
+        <tr>
+          <th>Produto</th>
+          <th>Qtd.</th>
+          <th>Preço</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in itens %}
+        <tr>
+          <td>{{ item.nome }}</td>
+          <td>{{ item.quantidade }}</td>
+          <td>{{ item.preco_unitario|moeda }}</td>
+          <td>{{ item.subtotal|moeda }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4">Esta venda não tem itens.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="grades">
+  <article class="cartao">
+    <span>Bruto dos itens</span>
+    <strong>{{ bruto|moeda }}</strong>
+  </article>
+  <article class="cartao">
+    <span>Desconto gravado</span>
+    <strong>{{ venda.desconto|moeda }}</strong>
+  </article>
+  <article class="cartao">
+    <span>Total gravado</span>
+    <strong>{{ venda.valor_total|moeda }}</strong>
+  </article>
+  <article class="cartao">
+    <span>calcular_total_venda</span>
+    <strong>{{ venda.total_funcao|moeda }}</strong>
+  </article>
+</section>
+
+{% if venda.status != 'cancelada' %}
+<form method="post" action="{{ url_for('vendas.cancelar', venda_id=venda.id) }}" onsubmit="return confirm('Cancelar a venda {{ venda.id }} e devolver o estoque?');">
+  <button type="submit" class="botao-perigo">Cancelar venda</button>
+</form>
+<p class="dica">O cancelamento chama <code>cancelar_venda</code>. A devolução do estoque ocorre na trigger <code>trg_devolver_estoque_cancelamento</code>.</p>
+{% else %}
+<p class="dica">Venda cancelada. O status não volta para aberta nem para finalizada.</p>
+{% endif %}
+{% endblock %}

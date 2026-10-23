@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block titulo %}Início{% endblock %}
+{% block conteudo %}
+<section class="cabecalho">
+  <div>
+    <p class="olho">Vendas e estoque</p>
+    <h1>Painel da loja</h1>
+    <p class="resumo">O estoque baixa na inclusão do item, volta no cancelamento e a reposição soma unidades em um produto já cadastrado. Essas regras estão no PostgreSQL.</p>
+  </div>
+  <a class="botao" href="{{ url_for('vendas.lista') }}">Registrar venda</a>
+</section>
+
+<section class="grades">
+  <article class="cartao">
+    <span>Produtos</span>
+    <strong>{{ totais.produtos }}</strong>
+  </article>
+  <article class="cartao">
+    <span>Clientes</span>
+    <strong>{{ totais.clientes }}</strong>
+  </article>
+  <article class="cartao">
+    <span>Vendas finalizadas</span>
+    <strong>{{ totais.finalizadas }}</strong>
+  </article>
+  <article class="cartao">
+    <span>Vendas canceladas</span>
+    <strong>{{ totais.canceladas }}</strong>
+  </article>
+  <article class="cartao">
+    <span>Unidades em estoque</span>
+    <strong>{{ totais.unidades }}</strong>
+  </article>
+</section>
+
+<div class="colunas">
+  <section>
+    <h2>Vendas recentes</h2>
+    {% if vendas %}
+    <div class="tabela-rolagem">
+      <table>
+        <thead>
+          <tr>
+            <th>Nº</th>
+            <th>Cliente</th>
+            <th>Status</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for venda in vendas %}
+          <tr>
+            <td><a href="{{ url_for('vendas.detalhe', venda_id=venda.id) }}">{{ venda.id }}</a></td>
+            <td>{{ venda.cliente }}</td>
+            <td><span class="status status-{{ venda.status }}">{{ venda.status }}</span></td>
+            <td>{{ venda.valor_total|moeda }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="vazio">Nenhuma venda registrada.</p>
+    {% endif %}
+  </section>
+
+  <section>
+    <h2>Estoque baixo</h2>
+    {% if estoque_baixo %}
+    <ul class="lista">
+      {% for produto in estoque_baixo %}
+      <li><span>{{ produto.nome }}</span><strong>{{ produto.estoque }} un.</strong></li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="vazio">Nenhum produto com 5 unidades ou menos.</p>
+    {% endif %}
+    <p class="dica"><a href="{{ url_for('produtos.lista') }}#repor">Repor estoque</a></p>
+  </section>
+</div>
+{% endblock %}
