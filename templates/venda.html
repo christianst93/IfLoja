@@ -7,7 +7,7 @@
     <h1>{{ venda.cliente }}</h1>
     <p class="resumo">{{ venda.data_hora|datahora }} · <span class="status status-{{ venda.status }}">{{ venda.status }}</span></p>
   </div>
-  <a class="botao-secundario" href="{{ url_for('vendas.lista') }}">Voltar</a>
+  <a class="botao-secundario" href="{{ url_for('vendas.vendas') }}">Voltar</a>
 </section>
 
 <section>

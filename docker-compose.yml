@@ -19,13 +19,13 @@ services:
     ports:
       - "5055:5000"
     environment:
-      HOST: 0.0.0.0
-      PORT: 5000
-      PGHOST: db
-      PGPORT: 5432
-      PGDATABASE: loja
-      PGUSER: postgres
-      PGPASSWORD: postgres
+      FLASK_HOST: 0.0.0.0
+      FLASK_PORT: 5000
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: loja
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     depends_on:
       db:
         condition: service_healthy

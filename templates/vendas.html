@@ -56,7 +56,7 @@
       <tbody>
         {% for venda in vendas %}
         <tr>
-          <td><a href="{{ url_for('vendas.detalhe', venda_id=venda.id) }}">{{ venda.id }}</a></td>
+          <td><a href="{{ url_for('vendas.venda', venda_id=venda.id) }}">{{ venda.id }}</a></td>
           <td>{{ venda.cliente }}</td>
           <td>{{ venda.data_hora|datahora }}</td>
           <td><span class="status status-{{ venda.status }}">{{ venda.status }}</span></td>

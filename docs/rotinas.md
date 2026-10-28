@@ -26,7 +26,7 @@ SELECT calcular_total_venda(1);
 
 Lê o estoque do produto e devolve verdadeiro quando a quantidade pedida cabe. Produto inexistente devolve falso. A function não altera estoque.
 
-Verificação na aplicação: em Produtos ou em Rotinas, peça uma quantidade maior que o estoque e outra que caiba.
+Verificação na aplicação: em Produtos, peça uma quantidade maior que o estoque e outra que caiba.
 
 Verificação no SQL:
 
@@ -43,7 +43,7 @@ Confere se o cliente e o produto existem, abre a venda, inclui um item com o pre
 
 A procedure não dá `UPDATE` em `produto.estoque`. A baixa acontece na trigger `trg_movimentar_estoque_item`, disparada pelo `INSERT` do item. Quantidade, preço, estoque e venda aberta também são validados por triggers, então a mesma regra vale para um `INSERT` feito direto na tabela `item_venda`.
 
-Verificação na aplicação: em Vendas, finalize uma venda e confira o estoque do produto e a linha nova em Auditoria.
+Verificação na aplicação: em Vendas, finalize uma venda e confira o estoque do produto.
 
 Verificação no SQL:
 

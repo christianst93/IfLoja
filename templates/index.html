@@ -7,7 +7,7 @@
     <h1>Painel da loja</h1>
     <p class="resumo">O estoque baixa na inclusão do item, volta no cancelamento e a reposição soma unidades em um produto já cadastrado. Essas regras estão no PostgreSQL.</p>
   </div>
-  <a class="botao" href="{{ url_for('vendas.lista') }}">Registrar venda</a>
+  <a class="botao" href="{{ url_for('vendas.vendas') }}">Registrar venda</a>
 </section>
 
 <section class="grades">
@@ -50,7 +50,7 @@
         <tbody>
           {% for venda in vendas %}
           <tr>
-            <td><a href="{{ url_for('vendas.detalhe', venda_id=venda.id) }}">{{ venda.id }}</a></td>
+            <td><a href="{{ url_for('vendas.venda', venda_id=venda.id) }}">{{ venda.id }}</a></td>
             <td>{{ venda.cliente }}</td>
             <td><span class="status status-{{ venda.status }}">{{ venda.status }}</span></td>
             <td>{{ venda.valor_total|moeda }}</td>
@@ -75,7 +75,7 @@
     {% else %}
     <p class="vazio">Nenhum produto com 5 unidades ou menos.</p>
     {% endif %}
-    <p class="dica"><a href="{{ url_for('produtos.lista') }}#repor">Repor estoque</a></p>
+    <p class="dica"><a href="{{ url_for('produtos.produtos') }}#repor">Repor estoque</a></p>
   </section>
 </div>
 {% endblock %}

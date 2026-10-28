@@ -123,9 +123,10 @@ h2 { font-size: 1.25rem; margin: 8px 0 12px; }
   margin: 18px 0 28px;
 }
 
-.cartao, .painel-form, .lista, table {
+.cartao, .painel-form, .lista, .tabela-rolagem {
   background: var(--papel);
   border: 1px solid var(--linha);
+  border-radius: 12px;
   box-shadow: var(--sombra);
 }
 
@@ -184,6 +185,7 @@ input, select {
   width: 100%;
   padding: 8px 10px;
   border: 1px solid #cfc3b2;
+  border-radius: 8px;
   background: #fff;
   color: var(--tinta);
 }
@@ -201,12 +203,15 @@ button, .botao { background: var(--verde); color: #fff; }
 .botao-secundario { background: transparent; color: var(--tinta); border: 1px solid #cfc3b2; }
 .botao-perigo { background: var(--vermelho); color: #fff; }
 
-.tabela-rolagem { overflow-x: auto; }
+.tabela-rolagem { overflow: auto; }
 
 table {
   width: 100%;
   border-collapse: collapse;
+  background: transparent;
 }
+
+.tabela-rolagem tr:last-child td { border-bottom: 0; }
 
 th, td {
   padding: 10px 12px;
