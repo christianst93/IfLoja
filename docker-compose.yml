@@ -9,13 +9,14 @@ services:
       - pgdata:/var/lib/postgresql/data
       - ./sql/bd.sql:/docker-entrypoint-initdb.d/01-bd.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d loja"]
       interval: 2s
       timeout: 5s
-      retries: 20
+      retries: 30
 
   web:
     build: .
+    restart: on-failure
     ports:
       - "5055:5000"
     environment:
