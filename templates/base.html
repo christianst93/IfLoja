@@ -8,15 +8,15 @@
 </head>
 <body>
   <header class="topo">
-    <a class="marca" href="{{ url_for('inicio.inicio') }}">
+    <a class="marca" href="{{ url_for('inicio') }}">
       <span class="selo">L</span>
       <span>IfLoja</span>
     </a>
     <nav>
-      <a href="{{ url_for('inicio.inicio') }}" {% if request.endpoint == 'inicio.inicio' %}class="ativa"{% endif %}>Início</a>
-      <a href="{{ url_for('produtos.produtos') }}" {% if request.endpoint == 'produtos.produtos' %}class="ativa"{% endif %}>Produtos</a>
-      <a href="{{ url_for('clientes.clientes') }}" {% if request.endpoint == 'clientes.clientes' %}class="ativa"{% endif %}>Clientes</a>
-      <a href="{{ url_for('vendas.vendas') }}" {% if request.endpoint and request.endpoint.startswith('vendas.') %}class="ativa"{% endif %}>Vendas</a>
+      <a href="{{ url_for('inicio') }}" {% if request.endpoint == 'inicio' %}class="ativa"{% endif %}>Início</a>
+      <a href="{{ url_for('produtos') }}" {% if request.endpoint == 'produtos' %}class="ativa"{% endif %}>Produtos</a>
+      <a href="{{ url_for('clientes') }}" {% if request.endpoint == 'clientes' %}class="ativa"{% endif %}>Clientes</a>
+      <a href="{{ url_for('vendas') }}" {% if request.endpoint in ('vendas', 'venda', 'cancelar') %}class="ativa"{% endif %}>Vendas</a>
     </nav>
   </header>
   <main>
