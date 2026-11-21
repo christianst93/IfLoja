@@ -9,6 +9,7 @@
   --ambar-fundo: #f8efd8;
   --vermelho: #8c2f39;
   --vermelho-fundo: #fdecee;
+  --azul: #1e4d8c;
   --sombra: 0 1px 0 rgba(35, 28, 20, 0.04);
 }
 
@@ -171,6 +172,24 @@ form {
   align-items: end;
 }
 
+.itens-venda {
+  display: grid;
+  gap: 10px;
+}
+
+.item-venda {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) 140px auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.acoes-venda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 label {
   display: grid;
   gap: 4px;
@@ -190,7 +209,7 @@ input, select {
   color: var(--tinta);
 }
 
-button, .botao, .botao-secundario, .botao-perigo {
+button, .botao, .botao-secundario, .botao-perigo, .botao-azul {
   border: 0;
   border-radius: 8px;
   cursor: pointer;
@@ -202,6 +221,7 @@ button, .botao, .botao-secundario, .botao-perigo {
 button, .botao { background: var(--verde); color: #fff; }
 .botao-secundario { background: transparent; color: var(--tinta); border: 1px solid #cfc3b2; }
 .botao-perigo { background: var(--vermelho); color: #fff; }
+.botao-azul { background: var(--azul); color: #fff; }
 
 .tabela-rolagem { overflow: auto; }
 
@@ -278,4 +298,5 @@ td form { margin: 0; }
   .cabecalho { align-items: flex-start; flex-direction: column; }
   h1 { font-size: 1.6rem; }
   .topo { padding: 14px 16px; }
+  .item-venda { grid-template-columns: 1fr; }
 }

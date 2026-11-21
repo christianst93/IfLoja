@@ -334,33 +334,41 @@ FOR EACH ROW
 EXECUTE FUNCTION devolver_estoque_cancelamento();
 
 
-CREATE OR REPLACE PROCEDURE registrar_venda(var_cliente_id integer, var_produto_id integer, var_quantidade integer)
+CREATE OR REPLACE PROCEDURE registrar_venda(var_cliente_id integer, var_produtos integer[], var_quantidades integer[])
 AS $$
 DECLARE
     var_venda_id integer;
     var_preco money;
     var_bruto numeric := 0;
     var_liquido money;
+    i integer;
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM cliente WHERE id = var_cliente_id) THEN
         RAISE EXCEPTION 'Cliente inexistente.';
     END IF;
 
-    IF NOT EXISTS (SELECT 1 FROM produto WHERE id = var_produto_id) THEN
-        RAISE EXCEPTION 'Produto inexistente.';
+    IF COALESCE(array_length(var_produtos, 1), 0) = 0
+       OR COALESCE(array_length(var_quantidades, 1), 0) <> array_length(var_produtos, 1) THEN
+        RAISE EXCEPTION 'Informe ao menos um produto, com a quantidade de cada um.';
     END IF;
-
-    SELECT preco
-    INTO var_preco
-    FROM produto
-    WHERE id = var_produto_id;
 
     INSERT INTO venda (cliente_id, status)
     VALUES (var_cliente_id, 'aberta')
     RETURNING id INTO var_venda_id;
 
-    INSERT INTO item_venda (venda_id, produto_id, quantidade, preco_unitario)
-    VALUES (var_venda_id, var_produto_id, var_quantidade, var_preco);
+    FOR i IN 1 .. array_length(var_produtos, 1) LOOP
+        SELECT preco
+        INTO var_preco
+        FROM produto
+        WHERE id = var_produtos[i];
+
+        IF var_preco IS NULL THEN
+            RAISE EXCEPTION 'Produto inexistente.';
+        END IF;
+
+        INSERT INTO item_venda (venda_id, produto_id, quantidade, preco_unitario)
+        VALUES (var_venda_id, var_produtos[i], var_quantidades[i], var_preco);
+    END LOOP;
 
     SELECT COALESCE(SUM(preco_unitario::numeric * quantidade), 0)
     INTO var_bruto
@@ -440,10 +448,10 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-CALL registrar_venda(1, 4, 1);
+CALL registrar_venda(1, ARRAY[4], ARRAY[1]);
 
 
-CALL registrar_venda(2, 1, 2);
+CALL registrar_venda(2, ARRAY[1], ARRAY[2]);
 
 
 -- SELECT calcular_total_venda(1);

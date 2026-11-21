@@ -11,7 +11,7 @@ Trabalho prático de Programação em Banco de Dados. A aplicação registra ven
 
 - Cadastra categorias, produtos e clientes.
 - Consulta se uma quantidade cabe no estoque, sem alterar o saldo.
-- Registra uma venda de um produto, aplica 10% de desconto quando o bruto chega a R$ 200 e baixa o estoque.
+- Registra uma venda com um ou mais produtos, aplica 10% de desconto quando o bruto chega a R$ 200 e baixa o estoque.
 - Cancela a venda e devolve o estoque.
 - Repõe o estoque de um produto já cadastrado.
 - Recusa quantidade inválida, preço inválido, estoque insuficiente, item em venda que não está aberta e mudança indevida de status.

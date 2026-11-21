@@ -221,12 +221,16 @@ def vendas():
         conn = conectar()
         try:
             cliente_id = int(request.form["cliente_id"])
-            produto_id = int(request.form["produto_id"])
-            quantidade = int(request.form["quantidade"])
+            produto_ids = request.form.getlist("produto_id")
+            quantidades = request.form.getlist("quantidade")
+            if len(produto_ids) == 0 or len(produto_ids) != len(quantidades):
+                raise ValueError
+            produtos = [int(produto_id) for produto_id in produto_ids]
+            quantidades = [int(quantidade) for quantidade in quantidades]
             with conn.cursor() as cur:
                 cur.execute(
                     "CALL registrar_venda(%s, %s, %s);",
-                    [cliente_id, produto_id, quantidade],
+                    [cliente_id, produtos, quantidades],
                 )
                 cur.execute("SELECT id FROM venda ORDER BY id DESC LIMIT 1;")
                 venda_id = cur.fetchone()[0]

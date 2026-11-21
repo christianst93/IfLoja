@@ -37,9 +37,9 @@ SELECT consultar_disponibilidade(4, 1000);
 
 ## Stored procedures
 
-### registrar_venda(var_cliente_id, var_produto_id, var_quantidade)
+### registrar_venda(var_cliente_id, var_produtos, var_quantidades)
 
-Confere se o cliente e o produto existem, abre a venda, inclui um item com o preço atual e finaliza. O total e o desconto vêm de `calcular_total_venda`.
+Confere se o cliente existe, abre a venda e inclui cada produto com o preço atual. O desconto de 10% vale sobre o bruto de todos os itens. O total e o desconto vêm de `calcular_total_venda`.
 
 A procedure não dá `UPDATE` em `produto.estoque`. A baixa acontece na trigger `trg_movimentar_estoque_item`, disparada pelo `INSERT` do item. Quantidade, preço, estoque e venda aberta também são validados por triggers, então a mesma regra vale para um `INSERT` feito direto na tabela `item_venda`.
 
@@ -48,14 +48,14 @@ Verificação na aplicação: em Vendas, finalize uma venda e confira o estoque 
 Verificação no SQL:
 
 ```sql
-CALL registrar_venda(3, 3, 1);
+CALL registrar_venda(3, ARRAY[3], ARRAY[1]);
 SELECT id, nome, estoque FROM produto WHERE id = 3;
 ```
 
 Uma quantidade acima do estoque deve falhar sem gravar a venda:
 
 ```sql
-CALL registrar_venda(1, 4, 1000);
+CALL registrar_venda(1, ARRAY[4], ARRAY[1000]);
 ```
 
 ### cancelar_venda(var_venda_id integer)
@@ -166,7 +166,7 @@ Verificação: cancele pela aplicação e compare o estoque com o valor anterior
 ## Ordem que vale na venda
 
 1. `registrar_venda` insere a venda aberta.
-2. A procedure insere o item. As triggers de venda aberta, quantidade, preço e estoque rodam antes. A trigger de movimentação baixa o estoque depois.
+2. A procedure insere cada item. As triggers de venda aberta, quantidade, preço e estoque rodam antes. A trigger de movimentação baixa o estoque depois.
 3. A procedure calcula o total e marca a venda como finalizada.
 4. No cancelamento, a procedure só muda o status. A trigger devolve o estoque.
 5. `repor_estoque` soma unidades direto no produto e não altera vendas já registradas.
