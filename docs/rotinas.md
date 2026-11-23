@@ -14,7 +14,7 @@ Soma `preço unitário × quantidade` dos itens da venda. Se o bruto for de R$ 2
 
 A procedure `registrar_venda` usa esse retorno para gravar `valor_total` e `desconto`. A tela da venda também chama a function de novo, para mostrar o valor calculado ao lado do valor gravado.
 
-Verificação na aplicação: abra uma venda de monitor (bruto R$ 800,00). O cartão `calcular_total_venda` mostra R$ 720,00.
+Verificação na aplicação: abra uma venda de monitor (bruto R$ 980,00). O cartão `calcular_total_venda` mostra R$ 882,00.
 
 Verificação no SQL:
 
@@ -108,7 +108,7 @@ INSERT INTO item_venda (venda_id, produto_id, quantidade, preco_unitario)
 VALUES (ID_DA_VENDA, 1, 1, NULL);
 ```
 
-O item deve gravar o preço do mouse. Em seguida, apague esse teste ou cancele o fluxo para não misturar com a demonstração.
+O item deve gravar o preço do mouse gamer. Em seguida, apague esse teste ou cancele o fluxo para não misturar com a demonstração.
 
 ## Triggers intermediárias
 
@@ -135,7 +135,7 @@ A mensagem é "Não é permitido alterar itens de uma venda que não está abert
 
 `BEFORE INSERT OR UPDATE OF quantidade, produto_id` em `item_venda`. Trava a linha do produto e recusa a quantidade que passa do estoque. No update do mesmo produto, compara só a diferença.
 
-Verificação: peça, na tela de vendas, mais unidades do que o estoque do monitor.
+Verificação: peça, na tela de vendas, mais unidades do que o estoque do monitor 24 polegadas.
 
 ### trg_validar_status_venda
 

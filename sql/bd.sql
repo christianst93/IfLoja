@@ -44,21 +44,33 @@ CREATE TABLE item_venda (
 );
 
 INSERT INTO categoria (nome) VALUES
-('INFORMATICA'),
-('PAPELARIA'),
-('ELETRONICOS');
+('COMPONENTES'),
+('PERIFERICOS'),
+('MONITORES');
 
 INSERT INTO produto (nome, preco, estoque, categoria_id) VALUES
-('MOUSE USB', 45.00, 20, 1),
-('TECLADO', 120.00, 15, 1),
-('CADERNO', 25.00, 40, 2),
-('MONITOR', 800.00, 5, 3),
-('PEN DRIVE', 40.00, 30, 1);
+('PROCESSADOR INTEL I5', 890.00, 10, 1),
+('MEMORIA RAM 16GB', 260.00, 20, 1),
+('SSD 512GB', 310.00, 16, 1),
+('PLACA DE VIDEO RTX 4060', 2100.00, 6, 1),
+('FONTE 650W', 390.00, 12, 1),
+('MOUSE GAMER', 140.00, 30, 2),
+('TECLADO MECANICO', 270.00, 18, 2),
+('HEADSET', 210.00, 16, 2),
+('WEBCAM FULL HD', 190.00, 14, 2),
+('MONITOR 24 POLEGADAS', 980.00, 8, 3);
 
 INSERT INTO cliente (nome, email, telefone) VALUES
 ('ANA SOUZA', 'ana.souza@email.com', '53999990001'),
 ('BRUNO LIMA', 'bruno.lima@email.com', '53999990002'),
-('CARLA NUNES', 'carla.nunes@email.com', '53999990003');
+('CARLA NUNES', 'carla.nunes@email.com', '53999990003'),
+('DIEGO MARTINS', 'diego.martins@email.com', '53999990004'),
+('ELENA COSTA', 'elena.costa@email.com', '53999990005'),
+('FELIPE ROCHA', 'felipe.rocha@email.com', '53999990006'),
+('GABRIELA ALVES', 'gabriela.alves@email.com', '53999990007'),
+('HENRIQUE DIAS', 'henrique.dias@email.com', '53999990008'),
+('ISABELA FERREIRA', 'isabela.ferreira@email.com', '53999990009'),
+('JOAO PEREIRA', 'joao.pereira@email.com', '53999990010');
 
 
 CREATE OR REPLACE FUNCTION calcular_total_venda(var_venda_id integer)
@@ -448,10 +460,16 @@ END;
 $$ LANGUAGE plpgsql;
 
 
-CALL registrar_venda(1, ARRAY[4], ARRAY[1]);
-
-
-CALL registrar_venda(2, ARRAY[1], ARRAY[2]);
+CALL registrar_venda(1, ARRAY[10], ARRAY[1]);
+CALL registrar_venda(2, ARRAY[6], ARRAY[2]);
+CALL registrar_venda(3, ARRAY[7, 8], ARRAY[1, 1]);
+CALL registrar_venda(4, ARRAY[1], ARRAY[1]);
+CALL registrar_venda(5, ARRAY[9], ARRAY[1]);
+CALL registrar_venda(6, ARRAY[2], ARRAY[2]);
+CALL registrar_venda(7, ARRAY[6, 9], ARRAY[1, 1]);
+CALL registrar_venda(8, ARRAY[5], ARRAY[1]);
+CALL registrar_venda(9, ARRAY[8], ARRAY[2]);
+CALL registrar_venda(10, ARRAY[3, 6], ARRAY[1, 1]);
 
 
 -- SELECT calcular_total_venda(1);

@@ -3,9 +3,8 @@
 {% block conteudo %}
 <section class="cabecalho">
   <div>
-    <p class="olho">Operação</p>
+    <p class="olho">Painel de vendas</p>
     <h1>Vendas</h1>
-    <p class="resumo">A procedure <code>registrar_venda</code> abre a venda, inclui os produtos e finaliza. Ela não mexe no estoque: quem baixa é a trigger de cada item. Compras a partir de R$ 200 recebem 10% de desconto sobre o total.</p>
   </div>
 </section>
 
@@ -43,7 +42,7 @@
       <button type="submit">Finalizar venda</button>
     </div>
   </form>
-  <p class="dica">Quantidade zero, estoque insuficiente e preço inválido são recusados pelo banco. A mensagem da trigger aparece aqui.</p>
+
 </section>
 <script>
 const lista = document.getElementById("itens");
