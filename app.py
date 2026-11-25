@@ -108,7 +108,7 @@ def produtos():
                 categoria_id = int(request.form["categoria_id"])
                 with conn.cursor() as cur:
                     cur.execute(
-                        "INSERT INTO produto (nome, preco, estoque, categoria_id) VALUES (%s, CAST(%s AS numeric)::money, %s, %s);",
+                        "INSERT INTO produto (nome, preco, estoque, categoria_id) VALUES (%s, %s, %s, %s);",
                         [nome, preco, estoque, categoria_id],
                     )
                 conn.commit()

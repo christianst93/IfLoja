@@ -2,13 +2,13 @@
 
 As regras de integridade ficam nas triggers, para valer também quando alguém inserir ou atualizar os registros direto na tabela. As procedures conduzem a operação e não repetem a baixa nem a devolução do estoque.
 
-Há 2 functions, 3 stored procedures e 8 triggers. O enunciado pede no mínimo duas de cada. As triggers a mais cobrem quantidade, preço, estoque, status e e-mail. Nenhuma existe só para completar a contagem.
+Há 2 functions, 3 stored procedures e 9 triggers. O enunciado pede no mínimo duas de cada. As triggers a mais cobrem quantidade, preço, estoque, status e e-mail. Nenhuma existe só para completar a contagem.
 
-A trigger `trg_validar_estoque_item` trava a linha do produto com `FOR UPDATE`. Duas vendas simultâneas não consomem a mesma unidade.
+A trigger `trigger_validar_estoque_item` trava a linha do produto com `FOR UPDATE`. Duas vendas simultâneas não consomem a mesma unidade.
 
 ## Functions
 
-### calcular_total_venda(var_venda_id integer) → money
+### calcular_total_venda(var_venda_id integer) → numeric(20,2)
 
 Soma `preço unitário × quantidade` dos itens da venda. Se o bruto for de R$ 200 ou mais, aplica 10% de desconto e devolve o líquido.
 
@@ -41,7 +41,7 @@ SELECT consultar_disponibilidade(4, 1000);
 
 Confere se o cliente existe, abre a venda e inclui cada produto com o preço atual. O desconto de 10% vale sobre o bruto de todos os itens. O total e o desconto vêm de `calcular_total_venda`.
 
-A procedure não dá `UPDATE` em `produto.estoque`. A baixa acontece na trigger `trg_movimentar_estoque_item`, disparada pelo `INSERT` do item. Quantidade, preço, estoque e venda aberta também são validados por triggers, então a mesma regra vale para um `INSERT` feito direto na tabela `item_venda`.
+A procedure não dá `UPDATE` em `produto.estoque`. A baixa acontece na trigger `trigger_movimentar_estoque_item`, disparada pelo `INSERT` do item. Quantidade, preço, estoque e venda aberta também são validados por triggers, então a mesma regra vale para um `INSERT` feito direto na tabela `item_venda`.
 
 Verificação na aplicação: em Vendas, finalize uma venda e confira o estoque do produto.
 
@@ -60,9 +60,9 @@ CALL registrar_venda(1, ARRAY[4], ARRAY[1000]);
 
 ### cancelar_venda(var_venda_id integer)
 
-Só muda `venda.status` para `cancelada`. Se a venda não existe, gera erro. Se já está cancelada, avisa e não altera nada.
+Só muda `venda.status` para `cancelada`. Se a venda não existe, gera erro. Se já está cancelada, gera erro e não altera nada.
 
-A devolução do estoque fica na trigger `trg_devolver_estoque_cancelamento`. Se a procedure também somasse o estoque, o cancelamento devolveria a quantidade duas vezes.
+A devolução do estoque fica na trigger `trigger_devolver_estoque_cancelamento`. Se a procedure também somasse o estoque, o cancelamento devolveria a quantidade duas vezes.
 
 Verificação na aplicação: cancele uma venda finalizada e veja o estoque voltar. Cancelar de novo mostra que a venda já está cancelada.
 
@@ -77,7 +77,7 @@ SELECT id, nome, estoque FROM produto ORDER BY id;
 
 Soma a quantidade informada ao estoque de um produto que já existe. Quantidade nula ou menor ou igual a zero gera erro. A procedure trava a linha do produto com `FOR UPDATE` antes de somar.
 
-Ela não passa pelas triggers da venda. A baixa continua em `trg_movimentar_estoque_item` e a devolução do cancelamento em `trg_devolver_estoque_cancelamento`.
+Ela não passa pelas triggers da venda. A baixa continua em `trigger_movimentar_estoque_item` e a devolução do cancelamento em `trigger_devolver_estoque_cancelamento`.
 
 Verificação na aplicação: em Produtos, no bloco Repor estoque, some unidades e confira a coluna Estoque.
 
@@ -90,13 +90,13 @@ SELECT id, nome, estoque FROM produto WHERE id = 1;
 
 ## Triggers básicas
 
-### trg_validar_quantidade_item
+### trigger_validar_quantidade_item
 
 `BEFORE INSERT OR UPDATE OF quantidade` em `item_venda`. Recusa quantidade nula ou menor ou igual a zero.
 
 Verificação: em Vendas, informe quantidade 0. A mensagem é "A quantidade do item deve ser maior que zero."
 
-### trg_validar_preco_item
+### trigger_validar_preco_item
 
 `BEFORE INSERT OR UPDATE OF preco_unitario, produto_id` em `item_venda`. Se o preço vier nulo, copia o preço atual do produto. Recusa preço nulo ou menor ou igual a zero.
 
@@ -108,17 +108,29 @@ INSERT INTO item_venda (venda_id, produto_id, quantidade, preco_unitario)
 VALUES (ID_DA_VENDA, 1, 1, NULL);
 ```
 
-O item deve gravar o preço do mouse gamer. Em seguida, apague esse teste ou cancele o fluxo para não misturar com a demonstração.
+O item deve gravar o preço do processador. Em seguida, apague esse teste ou cancele o fluxo para não misturar com a demonstração.
+
+### trigger_validar_preco_produto
+
+`BEFORE INSERT OR UPDATE OF preco, estoque` em `produto`. Recusa preço menor ou igual a zero e estoque negativo.
+
+Verificação no SQL:
+
+```sql
+INSERT INTO produto (nome, preco, estoque, categoria_id) VALUES ('TESTE', 0, 1, 1);
+```
+
+A mensagem é "O preço do produto deve ser maior que zero."
 
 ## Triggers intermediárias
 
-### trg_normalizar_email
+### trigger_normalizar_email
 
 `BEFORE INSERT OR UPDATE OF email` em `cliente`. Exige e-mail e grava `lower(trim(email))`.
 
 Verificação: cadastre o cliente com o e-mail `  MARIA@Email.COM `. A lista mostra `maria@email.com`.
 
-### trg_validar_venda_aberta
+### trigger_validar_venda_aberta
 
 `BEFORE INSERT OR UPDATE OR DELETE` em `item_venda`. Item só entra, muda ou sai enquanto a venda está aberta.
 
@@ -131,15 +143,15 @@ VALUES (1, 2, 1, 120);
 
 A mensagem é "Não é permitido alterar itens de uma venda que não está aberta."
 
-### trg_validar_estoque_item
+### trigger_validar_estoque_item
 
 `BEFORE INSERT OR UPDATE OF quantidade, produto_id` em `item_venda`. Trava a linha do produto e recusa a quantidade que passa do estoque. No update do mesmo produto, compara só a diferença.
 
 Verificação: peça, na tela de vendas, mais unidades do que o estoque do monitor 24 polegadas.
 
-### trg_validar_status_venda
+### trigger_validar_status_venda
 
-`BEFORE UPDATE OF status` em `venda`. Venda cancelada permanece cancelada. Venda finalizada não volta para aberta. Finalizada pode seguir para cancelada, que é o caminho da procedure.
+`BEFORE INSERT OR UPDATE OF status` em `venda`. Venda cancelada permanece cancelada. Venda finalizada não volta para aberta. Finalizada pode seguir para cancelada, que é o caminho da procedure.
 
 Verificação no SQL, depois de cancelar a venda 2:
 
@@ -149,15 +161,15 @@ UPDATE venda SET status = 'aberta' WHERE id = 2;
 
 ## Triggers avançadas
 
-### trg_movimentar_estoque_item
+### trigger_movimentar_estoque_item
 
 `AFTER INSERT OR UPDATE OF quantidade, produto_id OR DELETE` em `item_venda`. Na inclusão, baixa a quantidade. Na alteração, ajusta a diferença ou troca o produto. Na exclusão de item de venda ainda aberta, devolve a quantidade.
 
-Esta trigger e a de cancelamento não se atropelam: o cancelamento não apaga os itens. Ele só muda o status, e a outra trigger devolve o estoque uma vez. Depois do cancelamento, `trg_validar_venda_aberta` impede apagar o item, então a quantidade não volta uma segunda vez.
+Esta trigger e a de cancelamento não se atropelam: o cancelamento não apaga os itens. Ele só muda o status, e a outra trigger devolve o estoque uma vez. Depois do cancelamento, `trigger_validar_venda_aberta` impede apagar o item, então a quantidade não volta uma segunda vez.
 
 Verificação: anote o estoque, registre uma venda e confira a diferença. Ela deve ser igual à quantidade vendida.
 
-### trg_devolver_estoque_cancelamento
+### trigger_devolver_estoque_cancelamento
 
 `AFTER UPDATE OF status` em `venda`. Quando o status passa a `cancelada`, soma de volta a quantidade de cada item que continua na venda.
 
